@@ -228,6 +228,19 @@ describe GmailBritta do
     assert_equal('(to:thisisme@my-private.org OR to:this-is-me@bigco.example.com)', filter_text, "Should have exactly one 'has' property")
   end
 
+  it "understands and" do
+    fs = GmailBritta.filterset do
+      filter {
+        has :and => ['subject:whee', 'from:zot@spammer.com']
+        label 'yay'
+      }
+    end
+    filters = dom(fs)
+
+    filter_text = filters.xpath('/a:feed/a:entry/apps:property[@name="hasTheWord"]',ns).first['value']
+    assert_equal('subject:whee AND from:zot@spammer.com', filter_text)
+  end
+
   it "doesn't fail issue #4 - correctly-parenthesised nested ANDs" do
     fs = GmailBritta.filterset do
       filter {
