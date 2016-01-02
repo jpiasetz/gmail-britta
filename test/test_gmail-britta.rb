@@ -241,6 +241,19 @@ describe GmailBritta do
     assert_equal('subject:whee AND from:zot@spammer.com', filter_text)
   end
 
+  it "understands not" do
+    fs = GmailBritta.filterset do
+      filter {
+        has :not => 'subject:whee'
+        label 'yay'
+      }
+    end
+    filters = dom(fs)
+
+    filter_text = filters.xpath('/a:feed/a:entry/apps:property[@name="hasTheWord"]',ns).first['value']
+    assert_equal('-subject:whee', filter_text)
+  end
+
   it "doesn't fail issue #4 - correctly-parenthesised nested ANDs" do
     fs = GmailBritta.filterset do
       filter {
