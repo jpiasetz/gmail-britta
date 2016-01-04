@@ -254,6 +254,25 @@ describe GmailBritta do
     assert_equal('-subject:whee', filter_text)
   end
 
+  it "can log" do
+    logger_mock = MiniTest::Mock.new
+    logger_mock.expect :debug?, true # For first filter call
+    logger_mock.expect :debug?, true # For second also call
+    logger_mock.expect :debug, nil, [String]
+    logger_mock.expect :debug, nil, ["  has: []"]
+    logger_mock.expect :debug, nil, ["  from: []"]
+    logger_mock.expect :debug, nil, ["  to: [\"to@boinkor.net\"]"]
+    logger_mock.expect :debug, nil, ["  has_not: []"]
+    GmailBritta.filterset(:logger => logger_mock) do
+      filter {
+        from %w{from@boinkor.net}
+      }.also {
+        to %w{to@boinkor.net}
+      }
+    end
+
+  end
+
   it "doesn't fail issue #4 - correctly-parenthesised nested ANDs" do
     fs = GmailBritta.filterset do
       filter {
